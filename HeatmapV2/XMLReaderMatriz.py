@@ -112,12 +112,10 @@ def escreve_pontos_e_duracao(arquivo, leitura_arquivo_xml, tamanho_matriz):
                 info_duracao = f'Duracao: {duracao} ms\n'
                 f_saida_pontos.write(info_duracao)
 
-                # Escrever os pontos coletados para a região
                 for ponto in pontos_regiao:
                     f_saida_pontos.write(f'{ponto}\n')
-                f_saida_pontos.write('\n')  # Adiciona uma linha em branco após cada região
+                f_saida_pontos.write('\n')  
 
-                # Resetar para a próxima região
                 matriz_principal = matriz_atual
                 tempo_inicial_regiao = plugin_time_atual
                 ultimo_tempo_regiao = plugin_time_atual
@@ -132,37 +130,31 @@ def escreve_pontos_e_duracao(arquivo, leitura_arquivo_xml, tamanho_matriz):
                 f_saida_pontos.write(f'{ponto}\n')
 
     print(f"Dados de pontos armazenados em {caminho_completo_arquivo_pontos}")
-    return caminho_completo_arquivo_pontos  # <-- Adicionado esta linha para retornar o nome do arquivo.
+    return caminho_completo_arquivo_pontos  
 
 
 def filtra_duracoes_e_escreve(input_file_path, min_duration):
-    # Definir o nome do arquivo de saída
+
     output_file_name = 'output_filtered_coordinates.txt'
     
-    # Abre o arquivo para leitura
     with open(input_file_path, 'r') as file:
         content = file.read()
 
-    # Separa os blocos de dados com base na duração e nas coordenadas subsequentes
     blocks = re.split(r'Duracao: (\d+) ms', content)
 
-    # Remove o primeiro item se estiver vazio (uma peculiaridade de 'split')
     if not blocks[0].strip():
         blocks = blocks[1:]
 
-    # Prepara um local para armazenar as coordenadas que atendem ao critério
     filtered_content = []
 
-    # Itera sobre os blocos de duração e coordenadas, verificando a condição
-    for i in range(0, len(blocks), 2):  # Passos de 2, pois 1 é a duração e o outro é o conjunto de coordenadas
-        duration = int(blocks[i].strip())  # Converte a duração para um inteiro
-        coordinates = blocks[i + 1].strip()  # Obtem as coordenadas
 
-        # Verifica se a duração é maior ou igual à duração mínima especificada
+    for i in range(0, len(blocks), 2):  
+        duration = int(blocks[i].strip()) 
+        coordinates = blocks[i + 1].strip()  
+
         if duration >= min_duration:
             filtered_content.append(f'Duracao: {duration} ms\n{coordinates}')
 
-    # Se houver coordenadas filtradas, escreva-as no novo arquivo
     if filtered_content:
         with open(output_file_name, 'w') as output_file:
             output_file.write('\n\n'.join(filtered_content))
@@ -171,30 +163,26 @@ def filtra_duracoes_e_escreve(input_file_path, min_duration):
         print("Nenhuma coordenada encontrada com a duração mínima especificada.")
 
 def consolidar_coordenadas(arquivo_entrada):
-    # Preparar o nome do novo arquivo de saída.
+
     nome_base = os.path.basename(arquivo_entrada)
     nome_sem_extensao = os.path.splitext(nome_base)[0]
     arquivo_saida = f"{nome_sem_extensao}_coordenadas.txt"
 
-    # Obter o diretório do script atual. 
-    # Isso garante que estamos salvando no diretório do script.
     diretorio_script = os.path.dirname(os.path.realpath(__file__))
     caminho_completo_arquivo = os.path.join(diretorio_script, arquivo_saida)
 
-    # Regex para encontrar coordenadas dentro dos parênteses
     regex_coordenadas = re.compile(r'\((\d+),\s*(\d+)\)')
 
     try:
         with open(arquivo_entrada, 'r') as f_entrada, open(caminho_completo_arquivo, 'w') as f_saida:
             for linha in f_entrada:
                 linha_limpa = linha.strip()
-                # Se a linha não começa com 'Duracao:' e não é vazia, assumimos que é uma coordenada.
                 if linha_limpa and not linha_limpa.startswith('Duracao:'):
-                    # Procurar pela coordenada na linha
+
                     match = regex_coordenadas.search(linha_limpa)
                     if match:
-                        x, y = match.groups()  # Extrair as coordenadas
-                        f_saida.write(f"{x} {y}\n")  # Escrever as coordenadas formatadas
+                        x, y = match.groups()  
+                        f_saida.write(f"{x} {y}\n")  
 
     except FileNotFoundError:
         print(f"O arquivo {arquivo_entrada} não foi encontrado.")
@@ -215,17 +203,13 @@ def selecionar_arquivo():
         nome_sem_extensao = os.path.splitext(nome_base)[0]
         novo_nome_arquivo = f"{nome_sem_extensao}_processed.txt"
 
-        # Processa e escreve as matrizes e os pontos
         processa_matrizes_e_escreve(novo_nome_arquivo, dados_xml, 5)
         
-        # Agora, a função 'escreve_pontos_e_duracao' retorna o caminho do arquivo que foi criado.
         arquivo_pontos_duracao = escreve_pontos_e_duracao(novo_nome_arquivo, dados_xml, 5)
 
-        # Pergunta ao usuário a duração mínima
         duracao_minima_usuario = int(input("Digite o tempo mínimo de duração (em ms) que deseja analisar: "))
 
-        # Agora, passamos o arquivo criado para a função 'filtra_duracoes_e_escreve'.
-        filtra_duracoes_e_escreve(arquivo_pontos_duracao, duracao_minima_usuario)  # Aqui usamos o arquivo retornado.
+        filtra_duracoes_e_escreve(arquivo_pontos_duracao, duracao_minima_usuario) 
 
         consolidar_coordenadas("output_filtered_coordinates.txt")
 
