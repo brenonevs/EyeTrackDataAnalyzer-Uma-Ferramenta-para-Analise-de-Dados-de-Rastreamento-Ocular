@@ -3,40 +3,93 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import gaussian_kde
 import matplotlib.colors as mcolors
+import tkinter as tk
+from tkinter import filedialog
+import matplotlib.image as mpimg 
 
-def analisar_e_plotar(caminho_arquivo):
+# Inicializa e oculta a janela Tkinter
+def iniciar_tkinter():
+    root = tk.Tk()
+    root.withdraw()
+    return root
+
+# Encontra trechos de código em um arquivo Java
+def encontrar_trechos_codigo(root):
+    caminho_arquivo = filedialog.askopenfilename(parent=root, filetypes=[("Java files", "*.java")])
+    if not caminho_arquivo:
+        return [], []
+
+    inicio_snippet = "///* CODE SNIPPET STARTS HERE *///"
+    fim_snippet = "///* CODE SNIPPET ENDS HERE *///"
+    linhas_inicio = []
+    linhas_fim = []
+
+    with open(caminho_arquivo, 'r') as arquivo:
+        for numero_linha, linha in enumerate(arquivo, 1):
+            if inicio_snippet in linha:
+                linhas_inicio.append(numero_linha)
+            elif fim_snippet in linha:
+                linhas_fim.append(numero_linha)
+
+    return linhas_inicio, linhas_fim
+
+# Encontra a coluna mais longa em um intervalo de linhas de um arquivo Java
+def coluna_mais_longa(linha_minima, linha_maxima, root): 
+    arquivo_java = filedialog.askopenfilename(parent=root, title='Selecione um arquivo Java', filetypes=[('Arquivos Java', '*.java')])
+    if arquivo_java:
+        try:
+            with open(arquivo_java, 'r') as file:
+                codigo_java = file.read()
+
+            linhas = codigo_java.split('\n')
+            linhas_intervalo = linhas[linha_minima - 1:linha_maxima]
+            max_comprimento = max(len(linha) for linha in linhas_intervalo)
+
+            return max_comprimento
+
+        except Exception as e:
+            print(f"Ocorreu um erro ao processar o arquivo: {e}")
+            return None
+    else:
+        print("Nenhum arquivo foi selecionado.")
+        return None
+
+# Analisa dados, plota um mapa de calor e cria um colorbar
+def analisar_e_plotar(caminho_arquivo, caminho_imagem, nome_arquivo_duracao, root):
     data = pd.read_csv(caminho_arquivo, header=None, delim_whitespace=True, names=["x", "y"])
-
     x = data.y.values 
     y = data.x.values 
 
-    density = gaussian_kde([x,y])
-    d = density([x,y])
+    density = gaussian_kde([x, y])
 
+    img = mpimg.imread(caminho_imagem)
     plt.figure(figsize=(12, 8))
-    ax = sns.kdeplot(x=x, y=y, cmap='Reds', fill=True) 
-    plt.gca().invert_yaxis()
 
-    x_min = x.min() - 20
-    x_max = x.max() + 20
-    y_min = y.min() - 20
-    y_max = y.max() + 20
+    y_min = encontrar_trechos_codigo(root)[0][0]
+    y_max = encontrar_trechos_codigo(root)[1][0]
+    x_min = 0
+    x_max = coluna_mais_longa(y_min, y_max, root)
 
-    if x_min < 0:
-        x_min = 0
-    
-    if y_min < 0:
-        y_min = 0
+    plt.imshow(img, aspect='auto', extent=[x_min, x_max, y_max, y_min])
+    sns.kdeplot(x=x, y=y, cmap='Reds', fill=True, alpha=0.55)
 
     plt.xlim(x_min, x_max)
-    plt.ylim(y_max, y_min)  
+    plt.ylim(y_max, y_min)
 
     plt.title('Mapa de Calor das Coordenadas de Olhar')
     plt.xlabel('Coordenada X (Colunas)')
     plt.ylabel('Coordenada Y (Linhas)')
 
-    return plt
+    duracao_maxima, duracao_minima = calcular_duracao_max_min(nome_arquivo_duracao)
 
+    if duracao_maxima is not None and duracao_minima is not None:
+        cores = mcolors.LinearSegmentedColormap.from_list('gradiente', [(1, 1, 1), (1, 0, 0)], N=256)
+        cbar = plt.colorbar(plt.cm.ScalarMappable(cmap=cores), orientation='vertical', ticks=[0, 1])
+        cbar.ax.set_yticklabels([f'{duracao_minima} ms', f'{duracao_maxima} ms'])
+
+    plt.show()
+
+# Calcula a duração máxima e mínima a partir de um arquivo
 def calcular_duracao_max_min(nome_arquivo):
     with open(nome_arquivo, 'r') as arquivo:
         linhas = arquivo.readlines()
@@ -54,31 +107,15 @@ def calcular_duracao_max_min(nome_arquivo):
     else:
         return None, None
 
-def criar_colorbar_gradiente(duracao_maxima, duracao_minima):
-    fig, ax = plt.subplots(figsize=(1, 3)) 
-    
-    cores = mcolors.LinearSegmentedColormap.from_list('gradiente', [(1, 1, 1), (1, 0, 0)], N=256)
-    
-    cbar = plt.colorbar(plt.cm.ScalarMappable(cmap=cores), cax=ax, orientation='vertical',
-                        ticks=[0, 1]) 
-    
-    cbar.ax.set_yticklabels([f'{duracao_minima} ms', f'{duracao_maxima} ms'])
-    cbar.set_label('Duração')
-    
-    plt.subplots_adjust(left=0.452, bottom=0.11, right=0.583, top=0.88, wspace=0.2, hspace=0.2)
-
-def selecionar_arquivo():
-
+# Função principal para selecionar um arquivo e executar a análise
+def selecionar_arquivo(root):
     caminho_arquivo = "output_filtered_coordinates_coordenadas.txt"
+    caminho_imagem = filedialog.askopenfilename(parent=root, title="Selecione a Imagem de Fundo", filetypes=[("Image files", "*.jpg;*.png")])
+    nome_arquivo_duracao = 'output_filtered_coordinates.txt'
 
     if caminho_arquivo: 
-        plot_heatmap = analisar_e_plotar(caminho_arquivo)
-        nome_arquivo = 'output_filtered_coordinates.txt'
-        duracao_maxima, duracao_minima = calcular_duracao_max_min(nome_arquivo)
-        if duracao_maxima is not None and duracao_minima is not None:
-            criar_colorbar_gradiente(duracao_maxima, duracao_minima)
-            plt.show() 
-        else:
-            print("Nenhuma duração encontrada no arquivo.")
+        analisar_e_plotar(caminho_arquivo, caminho_imagem, nome_arquivo_duracao, root)
 
-selecionar_arquivo()
+# Inicializa a interface Tkinter e chama a função principal
+root = iniciar_tkinter()
+selecionar_arquivo(root)
