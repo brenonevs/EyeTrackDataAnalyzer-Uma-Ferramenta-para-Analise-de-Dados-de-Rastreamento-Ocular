@@ -15,7 +15,7 @@ def iniciar_tkinter():
 
 # Encontra trechos de código em um arquivo Java
 def encontrar_trechos_codigo(root):
-    caminho_arquivo = filedialog.askopenfilename(parent=root, filetypes=[("Java files", "*.java")])
+    caminho_arquivo = filedialog.askopenfilename(title='Selecione um arquivo Java', parent=root, filetypes=[("Java files", "*.java")])
     if not caminho_arquivo:
         return [], []
 
