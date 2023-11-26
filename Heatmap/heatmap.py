@@ -7,13 +7,11 @@ import tkinter as tk
 from tkinter import filedialog
 import matplotlib.image as mpimg 
 
-# Inicializa e oculta a janela Tkinter
 def iniciar_tkinter():
     root = tk.Tk()
     root.withdraw()
     return root
 
-# Encontra trechos de código em um arquivo Java
 def encontrar_trechos_codigo(root):
     caminho_arquivo = filedialog.askopenfilename(title='Selecione um arquivo Java', parent=root, filetypes=[("Java files", "*.java")])
     if not caminho_arquivo:
@@ -33,7 +31,6 @@ def encontrar_trechos_codigo(root):
 
     return linhas_inicio, linhas_fim
 
-# Encontra a coluna mais longa em um intervalo de linhas de um arquivo Java
 def coluna_mais_longa(linha_minima, linha_maxima, root): 
     arquivo_java = filedialog.askopenfilename(parent=root, title='Selecione um arquivo Java', filetypes=[('Arquivos Java', '*.java')])
     if arquivo_java:
@@ -54,7 +51,6 @@ def coluna_mais_longa(linha_minima, linha_maxima, root):
         print("Nenhum arquivo foi selecionado.")
         return None
 
-# Analisa dados, plota um mapa de calor e cria um colorbar
 def analisar_e_plotar(caminho_arquivo, caminho_imagem, nome_arquivo_duracao, root):
     data = pd.read_csv(caminho_arquivo, header=None, delim_whitespace=True, names=["x", "y"])
     x = data.y.values 
@@ -89,7 +85,6 @@ def analisar_e_plotar(caminho_arquivo, caminho_imagem, nome_arquivo_duracao, roo
 
     plt.show()
 
-# Calcula a duração máxima e mínima a partir de um arquivo
 def calcular_duracao_max_min(nome_arquivo):
     with open(nome_arquivo, 'r') as arquivo:
         linhas = arquivo.readlines()
@@ -107,7 +102,6 @@ def calcular_duracao_max_min(nome_arquivo):
     else:
         return None, None
 
-# Função principal para selecionar um arquivo e executar a análise
 def selecionar_arquivo(root):
     caminho_arquivo = "output_filtered_coordinates_coordenadas.txt"
     caminho_imagem = filedialog.askopenfilename(parent=root, title="Selecione a Imagem de Fundo", filetypes=[("Image files", "*.jpg;*.png")])
@@ -116,6 +110,5 @@ def selecionar_arquivo(root):
     if caminho_arquivo: 
         analisar_e_plotar(caminho_arquivo, caminho_imagem, nome_arquivo_duracao, root)
 
-# Inicializa a interface Tkinter e chama a função principal
 root = iniciar_tkinter()
 selecionar_arquivo(root)
