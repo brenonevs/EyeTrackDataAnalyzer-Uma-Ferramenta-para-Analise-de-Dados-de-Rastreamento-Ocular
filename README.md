@@ -34,4 +34,4 @@ FilterXML.py: Filtra o arquivo itrace-eclipse para retirar as mudanças de códi
 # Observações
 
 1) Note que o experimento foi feito usando o eclipse, por isso o arquivo é itrace-eclipse, no entanto, dependendo da IDE utilizada, o nome do arquivo pode mudar, mas os procedimentos são os mesmos
-2) Note que o código "SplitDataXMLCore.py" não utilizado. O motivo disso é que a criação desse código foi feita para utilizar uma ferramenta adicional chamada "Itrace Toolkit", no entanto, para a necessidade de fazer um heatmap esse código não é necessário
+2) Note que o código "SplitDataXMLCore.py" não foi utilizado. O motivo disso é que a criação desse código foi feita para utilizar uma ferramenta adicional chamada "Itrace Toolkit", no entanto, para a necessidade de fazer um heatmap esse código não é necessário
