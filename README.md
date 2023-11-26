@@ -14,7 +14,7 @@ FilterXML.py: Filtra o arquivo itrace-eclipse para retirar as mudanças de códi
 3) Na pasta "Experiments", você deverá colocar os arquivos do itrace-eclipse separados
 4) Na pasta "Experiments Codes" coloque os códigos que foram analisados durante o experimento
 5) Na pasta "Heatmap" estão os códigos para gerar o heatmap
-6) Na pasta "Itrace XML's" estão os arquivos XML's (Output do Eye Tracker)
+6) Na pasta "Itrace XML's" coloque os arquivos XML's (Output do Eye Tracker)
     
 # Como utilizar?
 
