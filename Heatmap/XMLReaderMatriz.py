@@ -191,6 +191,43 @@ def consolidar_coordenadas(arquivo_entrada):
 
     print(f"Coordenadas consolidadas foram escritas em {caminho_completo_arquivo}")
 
+
+def filtrar_coordenadas(root):
+    caminho_arquivo_java = filedialog.askopenfilename(title='Selecione um arquivo Java', parent=root, filetypes=[("Java files", "*.java")])
+    if not caminho_arquivo_java:
+        return
+
+    inicio_snippet = "///* CODE SNIPPET STARTS HERE *///"
+    fim_snippet = "///* CODE SNIPPET ENDS HERE *///"
+    
+    linha_inicio = None
+    linha_fim = None
+
+    with open(caminho_arquivo_java, 'r') as arquivo:
+        for numero_linha, linha in enumerate(arquivo, 1):
+            if inicio_snippet in linha:
+                linha_inicio = numero_linha
+            elif fim_snippet in linha:
+                linha_fim = numero_linha
+
+    if linha_inicio is None or linha_fim is None:
+        print("Não foram encontradas as linhas de início ou fim do snippet.")
+        return
+    
+    print(linha_inicio, linha_fim)
+
+    with open("output_filtered_coordinates_coordenadas.txt", 'r') as arquivo_coord:
+        linhas_coord = arquivo_coord.readlines()
+
+    linhas_filtradas = []
+    for linha in linhas_coord:
+        numero_linha = int(linha.split()[0])
+        if linha_inicio <= numero_linha <= linha_fim:
+            linhas_filtradas.append(linha)
+
+    with open("output_filtered_coordinates_coordenadas.txt", 'w') as arquivo_coord:
+        arquivo_coord.writelines(linhas_filtradas)
+
 def selecionar_arquivo():
     root = tk.Tk()
     root.withdraw()
@@ -215,6 +252,8 @@ def selecionar_arquivo():
         filtra_duracoes_e_escreve(arquivo_pontos_duracao, duracao_minima_usuario) 
 
         consolidar_coordenadas("output_filtered_coordinates.txt")
+        
+        filtrar_coordenadas(root)
 
 
 if __name__ == "__main__":
