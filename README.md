@@ -14,7 +14,7 @@ FilterXML.py: Filtra o arquivo itrace-eclipse para retirar as mudanças de códi
 3) Na pasta "Experiments", você deverá colocar os arquivos do itrace-eclipse separados
 4) Na pasta "Experiments Codes" coloque os códigos que foram analisados durante o experimento
 5) Na pasta "Heatmap" estão os códigos para gerar o heatmap
-6) Na pasta "Itrace XML's" estão os arquivos XML's (Output do Eye Tracker)
+6) Na pasta "Itrace XML's" coloque os arquivos XML's (Output do Eye Tracker)
     
 # Como utilizar?
 
@@ -34,5 +34,4 @@ FilterXML.py: Filtra o arquivo itrace-eclipse para retirar as mudanças de códi
 # Observações
 
 1) Note que o experimento foi feito usando o eclipse, por isso o arquivo é itrace-eclipse, no entanto, dependendo da IDE utilizada, o nome do arquivo pode mudar, mas os procedimentos são os mesmos
-2) Note que o código "SplitDataXMLCore.py" não utilizado. O motivo disso é que a criação desse código foi feita para utilizar uma ferramenta adicional chamada "Itrace Toolkit", no entanto, para a necessidade de fazer um heatmap esse código não é necessário
-3) Deixei alguns arquivos dentro de "Background Images", "Experiments" e "Itrace XML's" para vocês conseguirem realizar alguns testes. Note que dentro de "Experiments" existem as pastas "With DejaVu" e "Without DejaVu", essas pastas foram criadas para realizar a análise de um experimento que depois foi utilizada a ferramenta DejaVu que serve para recuperar dados perdidos. Vocês podem utilizar a pasta "Testes" para realizar alguns testes.
+2) Note que o código "SplitDataXMLCore.py" não foi utilizado. O motivo disso é que a criação desse código foi feita para utilizar uma ferramenta adicional chamada "Itrace Toolkit", no entanto, para a necessidade de fazer um heatmap esse código não é necessário
